@@ -1,6 +1,13 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const isProduction = import.meta.env.MODE === 'production';
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (isProduction
+    ? 'https://your-render-backend.onrender.com/api'    // fallback for production
+    : 'http://localhost:5000/api');                     // fallback for local
+
 
 // Create axios instance with better configuration
 const api = axios.create({
