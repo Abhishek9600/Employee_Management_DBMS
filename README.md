@@ -16,34 +16,26 @@ A comprehensive full-stack web application for managing company employees, built
 
 ## Tech Stack
 
-### Frontend
-- React 18
-- Vite
-- Tailwind CSS
-- React Router
-- Axios
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | React · Vite · Tailwind CSS · React Router · Axios |
+| **Backend** | Node.js · Express.js · PostgreSQL · CORS · Express Validator |
+| **Datbase** | PostgreSQL · pgAdmin 4 |
+| **Development Tools** | Nodemon · Vite |
+| **Deployment** | Netlify (Frontend) · Render (Backend) · Render PostgreSQL |
 
-### Backend
-- Node.js
-- Express.js
-- PostgreSQL
-- CORS
-- Express Validator
-
-### Tools
-- pgAdmin 4
-- Nodemon
+---
 
 ## Installation & Setup
 
 ### Prerequisites
 - Node.js (v18 or higher)
 - PostgreSQL
-- npm or yarn
+- npm
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/Abhishek9600/Employee_Management_DBMS.git
 cd employee-management-system
 ```
 
@@ -58,18 +50,6 @@ npm install
 
 # Set up environment variables
 cp .env.example .env
-```
-
-Edit the `.env` file:
-```
-DB_USER=postgres
-DB_HOST=localhost
-DB_NAME=employee_management
-DB_PASSWORD=your_password_here
-DB_PORT=5432
-PORT=5000
-JWT_SECRET=your_jwt_secret_here
-NODE_ENV=development
 ```
 
 ### 3. Database Setup
