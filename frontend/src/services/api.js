@@ -5,7 +5,7 @@ const isProduction = import.meta.env.MODE === 'production';
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   (isProduction
-    ? 'https://employee-management-dbms.onrender.com'    // fallback for production
+    ? 'https://employee-management-dbms.onrender.com/api'    // fallback for production
     : 'http://localhost:5000/api');                     // fallback for local
 
 

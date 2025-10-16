@@ -33,6 +33,21 @@ app.use('/api/employees', employeeRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/attendance', attendanceRoutes);
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Employee Management API',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      employees: '/api/employees',
+      departments: '/api/departments',
+      attendance: '/api/attendance'
+    },
+    documentation: 'Check README for API documentation'
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ 
