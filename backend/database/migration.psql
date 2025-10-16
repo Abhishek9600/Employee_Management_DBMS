@@ -1,0 +1,177 @@
+-- Add new columns to departments table (if they don't exist)
+DO $$ 
+BEGIN
+    -- Add location column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'departments' AND column_name = 'location') THEN
+        ALTER TABLE departments ADD COLUMN location VARCHAR(100);
+    END IF;
+
+    -- Add manager_id column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'departments' AND column_name = 'manager_id') THEN
+        ALTER TABLE departments ADD COLUMN manager_id INTEGER;
+    END IF;
+END $$;
+
+-- Create roles table if it doesn't exist
+CREATE TABLE IF NOT EXISTS roles (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL UNIQUE,
+    grade VARCHAR(50),
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add new columns to employees table (if they don't exist)
+DO $$ 
+BEGIN
+    -- Add dob column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'employees' AND column_name = 'dob') THEN
+        ALTER TABLE employees ADD COLUMN dob DATE;
+    END IF;
+
+    -- Add role_id column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'employees' AND column_name = 'role_id') THEN
+        ALTER TABLE employees ADD COLUMN role_id INTEGER REFERENCES roles(id);
+    END IF;
+
+    -- Add manager_id column if it doesn't exist (for self-referential relationship)
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'employees' AND column_name = 'manager_id') THEN
+        ALTER TABLE employees ADD COLUMN manager_id INTEGER REFERENCES employees(id);
+    END IF;
+
+    -- Add is_active column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'employees' AND column_name = 'is_active') THEN
+        ALTER TABLE employees ADD COLUMN is_active BOOLEAN DEFAULT true;
+    END IF;
+END $$;
+
+-- Create salary_history table if it doesn't exist
+CREATE TABLE IF NOT EXISTS salary_history (
+    id SERIAL PRIMARY KEY,
+    employee_id INTEGER REFERENCES employees(id) ON DELETE CASCADE,
+    effective_date DATE NOT NULL,
+    salary DECIMAL(10,2) NOT NULL,
+    note TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Update attendance table to add unique constraint and CASCADE
+DO $$ 
+BEGIN
+    -- Add unique constraint if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
+                   WHERE table_name = 'attendance' AND constraint_name = 'attendance_employee_id_date_key') THEN
+        ALTER TABLE attendance ADD CONSTRAINT attendance_employee_id_date_key 
+        UNIQUE (employee_id, date);
+    END IF;
+
+    -- Modify foreign key to add CASCADE if needed
+    -- Note: You might need to drop and recreate the constraint for CASCADE
+    -- This is optional and can be skipped if you prefer not to modify existing constraints
+END $$;
+
+-- Create leaves table if it doesn't exist
+CREATE TABLE IF NOT EXISTS leaves (
+    id SERIAL PRIMARY KEY,
+    employee_id INTEGER REFERENCES employees(id) ON DELETE CASCADE,
+    leave_type VARCHAR(50) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    reason TEXT,
+    status VARCHAR(20) DEFAULT 'pending',
+    approved_by INTEGER REFERENCES employees(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add foreign key constraint for department manager (if not exists)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
+                   WHERE table_name = 'departments' AND constraint_name = 'fk_department_manager') THEN
+        ALTER TABLE departments ADD CONSTRAINT fk_department_manager 
+        FOREIGN KEY (manager_id) REFERENCES employees(id);
+    END IF;
+END $$;
+
+-- Add new constraints (only if they don't exist)
+DO $$ 
+BEGIN
+    -- Add attendance status constraint if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
+                   WHERE table_name = 'attendance' AND constraint_name = 'valid_attendance_status') THEN
+        ALTER TABLE attendance ADD CONSTRAINT valid_attendance_status 
+        CHECK (status IN ('present', 'absent', 'late', 'half_day', 'leave'));
+    END IF;
+
+    -- Add leave status constraint if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
+                   WHERE table_name = 'leaves' AND constraint_name = 'valid_leave_status') THEN
+        ALTER TABLE leaves ADD CONSTRAINT valid_leave_status 
+        CHECK (status IN ('pending', 'approved', 'rejected'));
+    END IF;
+
+    -- Add leave type constraint if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
+                   WHERE table_name = 'leaves' AND constraint_name = 'valid_leave_type') THEN
+        ALTER TABLE leaves ADD CONSTRAINT valid_leave_type 
+        CHECK (leave_type IN ('sick', 'casual', 'vacation', 'maternity', 'paternity'));
+    END IF;
+END $$;
+
+-- Insert sample roles data (only if the table is empty)
+INSERT INTO roles (title, grade, description) 
+SELECT 'HR Manager', 'L4', 'Manages HR department and operations'
+WHERE NOT EXISTS (SELECT 1 FROM roles);
+
+INSERT INTO roles (title, grade, description) 
+SELECT 'Software Engineer', 'L3', 'Develops and maintains software applications'
+WHERE NOT EXISTS (SELECT 1 FROM roles WHERE title = 'Software Engineer');
+
+INSERT INTO roles (title, grade, description) 
+SELECT 'Senior Software Engineer', 'L4', 'Leads technical projects and mentors junior engineers'
+WHERE NOT EXISTS (SELECT 1 FROM roles WHERE title = 'Senior Software Engineer');
+
+INSERT INTO roles (title, grade, description) 
+SELECT 'Financial Analyst', 'L3', 'Analyzes financial data and prepares reports'
+WHERE NOT EXISTS (SELECT 1 FROM roles WHERE title = 'Financial Analyst');
+
+INSERT INTO roles (title, grade, description) 
+SELECT 'Marketing Specialist', 'L3', 'Executes marketing campaigns and strategies'
+WHERE NOT EXISTS (SELECT 1 FROM roles WHERE title = 'Marketing Specialist');
+
+INSERT INTO roles (title, grade, description) 
+SELECT 'Operations Manager', 'L4', 'Oversees daily business operations'
+WHERE NOT EXISTS (SELECT 1 FROM roles WHERE title = 'Operations Manager');
+
+-- Update existing departments with location if they don't have one
+UPDATE departments SET location = 'Floor 1' 
+WHERE name = 'Human Resources' AND (location IS NULL OR location = '');
+
+UPDATE departments SET location = 'Floor 2' 
+WHERE name = 'Information Technology' AND (location IS NULL OR location = '');
+
+UPDATE departments SET location = 'Floor 3' 
+WHERE name = 'Finance' AND (location IS NULL OR location = '');
+
+UPDATE departments SET location = 'Floor 4' 
+WHERE name = 'Marketing' AND (location IS NULL OR location = '');
+
+UPDATE departments SET location = 'Floor 1' 
+WHERE name = 'Operations' AND (location IS NULL OR location = '');
+
+-- Create indexes for better performance (if they don't exist)
+CREATE INDEX IF NOT EXISTS idx_attendance_employee_date ON attendance(employee_id, date);
+CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(date);
+CREATE INDEX IF NOT EXISTS idx_leaves_employee_date ON leaves(employee_id, start_date, end_date);
+CREATE INDEX IF NOT EXISTS idx_leaves_status ON leaves(status);
+CREATE INDEX IF NOT EXISTS idx_employees_department ON employees(department_id);
+CREATE INDEX IF NOT EXISTS idx_employees_manager ON employees(manager_id);
+
+-- Ensure all employees have is_active set properly
+UPDATE employees SET is_active = true WHERE is_active IS NULL;

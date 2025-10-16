@@ -25,10 +25,13 @@ app.use((req, res, next) => {
 // Import routes
 const employeeRoutes = require('./routes/employees');
 const departmentRoutes = require('./routes/departments');
+const attendanceRoutes = require('./routes/attendance');
+
 
 // Use routes
 app.use('/api/employees', employeeRoutes);
 app.use('/api/departments', departmentRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

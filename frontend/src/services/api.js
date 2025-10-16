@@ -37,7 +37,7 @@ api.interceptors.response.use(
       data: error.response?.data,
       message: error.message
     });
-    
+
     // Enhanced error messages
     if (error.response) {
       // Server responded with error status
@@ -50,7 +50,7 @@ api.interceptors.response.use(
       // Something else happened
       error.userMessage = error.message || 'Unknown error occurred';
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -90,7 +90,7 @@ export const employeeAPI = {
       throw error;
     }
   },
-  
+
   getById: async (id) => {
     try {
       const response = await api.get(`/employees/${id}`);
@@ -100,7 +100,7 @@ export const employeeAPI = {
       throw error;
     }
   },
-  
+
   create: async (employee) => {
     try {
       const response = await api.post('/employees', employee);
@@ -110,7 +110,7 @@ export const employeeAPI = {
       throw error;
     }
   },
-  
+
   update: async (id, employee) => {
     try {
       const response = await api.put(`/employees/${id}`, employee);
@@ -120,7 +120,7 @@ export const employeeAPI = {
       throw error;
     }
   },
-  
+
   delete: async (id) => {
     try {
       const response = await api.delete(`/employees/${id}`);
@@ -133,16 +133,22 @@ export const employeeAPI = {
 };
 
 // Department API functions
+// Add these to your existing API functions
+
 export const departmentAPI = {
-  getAll: async () => {
-    try {
-      const response = await api.get('/departments');
-      return response;
-    } catch (error) {
-      console.error('Error fetching departments:', error);
-      throw error;
-    }
-  },
+  getAll: () => api.get('/departments'),
+  getById: (id) => api.get(`/departments/${id}`),
+  create: (department) => api.post('/departments', department),
+  update: (id, department) => api.put(`/departments/${id}`, department),
+  delete: (id) => api.delete(`/departments/${id}`),
+};
+
+export const attendanceAPI = {
+  getAll: (params = {}) => api.get('/attendance', { params }),
+  mark: (attendance) => api.post('/attendance/mark', attendance),
+  getSummary: (params = {}) => api.get('/attendance/summary', { params }),
+  getEmployeeAttendance: (employeeId, params = {}) =>
+    api.get(`/attendance/employee/${employeeId}`, { params }),
 };
 
 export default api;

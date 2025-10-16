@@ -4,6 +4,8 @@ import Navigation from './components/Navigation';
 import Dashboard from './components/Dashboard';
 import EmployeeList from './components/EmployeeList';
 import EmployeeForm from './components/EmployeeForm';
+import DepartmentList from './components/DepartmentList';
+import AttendanceTracker from './components/AttendanceTracker';
 
 // You can add placeholder components for departments and attendance
 function App() {
@@ -23,6 +25,9 @@ function App() {
             <Route path="/employees" element={<EmployeeList />} />
             <Route path="/employees/new" element={<EmployeeForm />} />
             <Route path="/employees/edit/:id" element={<EmployeeForm />} />
+            
+            <Route path="/departments" element={<DepartmentList />} />
+            <Route path="/attendance" element={<AttendanceTracker />} />
 
             {/* Placeholder Routes for Other Sections */}
             <Route
