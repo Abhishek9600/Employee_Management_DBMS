@@ -474,7 +474,7 @@ const EmployeeForm = ({ employee, onSave, onCancel, isEdit = false }) => {
                     </div>
 
                     {/* Enhanced Debug Panel */}
-                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-xs">
+                    {/* <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-xs">
                         <strong>🔧 Debug Information - STATUS TRACKING:</strong>
                         <div className="mt-1 space-y-1">
                             <div><strong>Form Status:</strong> <code className="bg-yellow-100 px-1">"{formData.status}"</code></div>
@@ -482,7 +482,7 @@ const EmployeeForm = ({ employee, onSave, onCancel, isEdit = false }) => {
                             <div><strong>Is Edit Mode:</strong> <code>{isEdit.toString()}</code></div>
                             <div><strong>Department ID:</strong> <code>"{formData.department_id}"</code></div>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Form Actions */}
                     <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
