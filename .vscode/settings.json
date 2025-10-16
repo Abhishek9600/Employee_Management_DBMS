@@ -1,0 +1,15 @@
+{
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "employee_management",
+            "database": "employee_management",
+            "username": "abhishekchaubey",
+            "password": "1234"
+        }
+    ]
+}
