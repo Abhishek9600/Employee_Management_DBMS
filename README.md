@@ -20,9 +20,9 @@ A comprehensive full-stack web application for managing company employees, built
 |-------|-------------|
 | **Frontend** | React · Vite · Tailwind CSS · React Router · Axios |
 | **Backend** | Node.js · Express.js · PostgreSQL · CORS · Express Validator |
-| **Datbase** | PostgreSQL · pgAdmin 4 |
+| **Datbase** | PostgreSQL · pgAdmin 4 · Supabase |
 | **Development Tools** | Nodemon · Vite |
-| **Deployment** | Netlify (Frontend) · Render (Backend) · Render PostgreSQL |
+| **Deployment** | Netlify (Frontend) · Render (Backend) |
 
 ---
 

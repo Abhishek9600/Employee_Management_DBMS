@@ -1,10 +1,14 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const isProduction = process.env.NODE_ENV === 'production';
-
-// Different database configurations for development/production
-const developmentConfig = {
+// Use DATABASE_URL for production (Supabase), individual vars for development
+const config = process.env.DATABASE_URL ? {
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false // Required for Supabase
+  }
+} : {
+  // Development (local PostgreSQL)
   user: process.env.DB_USER || 'postgres',
   host: process.env.DB_HOST || 'localhost',
   database: process.env.DB_NAME || 'employee_management',
@@ -12,16 +16,16 @@ const developmentConfig = {
   port: process.env.DB_PORT || 5432,
 };
 
-const productionConfig = {
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-};
+const pool = new Pool(config);
 
-const pool = new Pool(isProduction ? productionConfig : developmentConfig);
-
-// Enhanced connection testing
+// Enhanced connection logging
 pool.on('connect', () => {
   console.log('Database connected successfully');
+  if (process.env.DATABASE_URL) {
+    console.log('Connected to: Supabase PostgreSQL');
+  } else {
+    console.log('Connected to: Local PostgreSQL');
+  }
 });
 
 pool.on('error', (err, client) => {
@@ -32,10 +36,11 @@ pool.on('error', (err, client) => {
 const testConnection = async () => {
   try {
     const client = await pool.connect();
-    console.log('Database connection test: SUCCESS');
+    const result = await client.query('SELECT version()');
+    console.log('Database version:', result.rows[0].version);
     client.release();
   } catch (error) {
-    console.error('Database connection test: FAILED', error);
+    console.error('Database connection test failed:', error.message);
   }
 };
 
